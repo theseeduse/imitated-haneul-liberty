@@ -68,10 +68,8 @@ var block_log = "{{ document.namespace }}:{{ document.title }} r{{ max_rev }} �
                     <div class="dropdown-menu" role="menu">
                         <div class="dr-admin" style="margin-top: 5px;"><b>엔진 도구</b></div>
                         <div class="dropdown-divider"></div>
-                        <a href="/UpdateLog" class="dropdown-item"><span class="fa fa-info-circle"></span> 업데이트 내역 & 안내</a>
-                        <a href="/License" class="dropdown-item"><span class="fa fa-copyright"></span> 라이선스</a>
-                        {% if perms.has('developer') %}
-                            <a href="/admin/owner_tools" class="dropdown-item"><span class="fa fa-gears"></span> 소유자 도구</a>
+			    <a href="/License" class="dropdown-item"><span class="fa fa-copyright"></span> 라이선스</a>
+                        {% if hostconfig.owners %}
                             <a href="/admin/config" class="dropdown-item"><span class="fa fa-gear"></span> 환경설정</a>
                         {% endif %}
                         <div class="dropdown-divider"></div>
@@ -94,7 +92,7 @@ var block_log = "{{ document.namespace }}:{{ document.title }} r{{ max_rev }} �
                             <div class="dr-admin"><b>권한 도구</b></div>
                             <div class="dropdown-divider"></div>
                         {% endif %}
-                        {% if perms.has('ipacl') %}
+                        {% if ipacl %}
                             <a href="/admin/ipacl" class="dropdown-item">IPACL</a>
                         {% endif %}
                         {% if perms.has('suspend_account') %}
@@ -109,21 +107,12 @@ var block_log = "{{ document.namespace }}:{{ document.title }} r{{ max_rev }} �
 			{% if perms.has('batch_revert') %}
 			    <a href="/admin/batch_revert" class="dropdown-item"><span class="fa fa-refresh"></span> 일괄 되돌리기</a>
 			{% endif %}
-            {% if perms.has('super_admin') %}
                 <div class="dropdown-divider"></div>
                 <div class="dr-admin"><b>관리 도구</b></div>
                 <div class="dropdown-divider"></div>
-                <a href="/admin/super_admin_tools" class="dropdown-item"><span class="fa fa-ellipsis-h"></span> 정식 관리자 도구</a>
                 {% if perms.has('login_history') %}
                     <a href="/admin/login_history" class="dropdown-item"><span class="fa fa-search"></span> 로그인 기록 조회</a>
                 {% endif %}
-			    <a href="/admin/verify_user" class="dropdown-item"><span class="fa fa-check-circle"></span> 사용자 인증</a>
-                <a href="/admin/hide_profile" class="dropdown-item"><span class="fa fa-image"></span> 프로필 사진 숨기기</a>
-			{% endif %}
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="//board.haneul.wiki"><span class="fa fa-pencil"></span><span class="hide-title">게시판</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/Upload"><span class="fa fa-cloud-upload"></span><span class="hide-title">파일 올리기</span></a>
@@ -142,20 +131,6 @@ var block_log = "{{ document.namespace }}:{{ document.title }} r{{ max_rev }} �
                                 float: left;
                             "></span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right login-dropdown-menu login-dropdown-menu-2" aria-labelledby="login-menu">
-                            <div class="username dropdown-item">
-                                <b>사용자 알림</b>
-                            </div>
-                            <div class="dropdown-divider"></div>
-                            {% for alert in alerts %}
-                                <div class="alert-entry">
-                                    <small>{{ alert.time|safe }}</small><br>
-                                    {{ alert.username|safe }} 님이 사용자님을 멘션했습니다.<br>
-                                    {{ alert.content|safe }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
                 {% endif %}
                 {% if member %}
                     <div class="dropdown login-menu">
@@ -283,36 +258,6 @@ var block_log = "{{ document.namespace }}:{{ document.title }} r{{ max_rev }} �
                     <div class="live-recent-header">
                         <ul class="nav nav-tabs">
                             <li class="nav-item">
-                                <a class="nav-link active" id="liberty-recent-tab1" style="font-size: 1.2rem; font-weight: 700; text-align: left;">도움말</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="live-recent-content" style="height: 110px; border-bottom-left-radius: 0.35rem; border-bottom-right-radius: 0.35rem;">
-                        <div class="pr10" style="height: 70%;">
-                            <i class="fa fa-question-circle pr11-ip-icon" style="padding: 0.2rem 0.6rem;"></i>
-                            <div class="pr14">
-                                {% if member %}
-                                    <b>{{ member.username }}님, 하늘위키에 처음 오셨나요?</b>
-                                {% else %}
-                                    <b>{{ req_ip }}님, 하늘위키에 처음 오셨나요?</b>
-                                {% endif %}
-                                <br /><small style="color: grey;">이 문서들을 통해 하늘위키 사용법을 익혀보세요!</small>
-                            </div>
-                        </div>
-                        <div class="pr13" style="color: grey">
-                            <a href="/w/{{ '하늘위키:도움말'|encode_doc }}">
-                                <i class="fa fa-question-circle" style="color: grey;"></i> <span class="pr13-text" style="color: grey;">하늘위키:도움말</span>
-                            </a>
-                            <a href="/w/{{ '하늘위키:문법 도움말'|encode_doc }}">
-                                <i class="fa fa-pencil pr13-icon2" style="color: grey;"></i> <span class="pr13-text" style="color: grey;">하늘위키:문법 도움말</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="live-recent" style="margin-bottom: 20px;">
-                    <div class="live-recent-header">
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item">
                                 <a class="nav-link active" id="liberty-recent-tab1" style="font-size: 1.2rem; font-weight: 700; text-align: left;">최근 변경<span class="fa fa-angle-right" style="margin-top: 2px;float: right; font-size: 1.2rem; font-weight: 900;"></span></a>
                             </li>
                         </ul>
@@ -434,12 +379,12 @@ var block_log = "{{ document.namespace }}:{{ document.title }} r{{ max_rev }} �
                                     {% endif %}
                                     {% if rev %}
                                         <a href="/raw/{{ document|encode_doc }}?rev={{ rev }}" class="dropdown-item">RAW</a>
-                                        <!-- <a href="//{{ document|encode_doc }}" class="dropdown-item">Blame</a> -->
+                                       	<a href="//{{ document|encode_doc }}" class="dropdown-item">Blame</a>
                                         <a href="/diff/{{ document|encode_doc }}?rev={{ rev }}&oldrev={{ rev - 1 }}" class="dropdown-item">이전 리비전과 비교</a>
                                         <a href="/revert/{{ document|encode_doc }}?rev={{ rev }}" class="dropdown-item">이 리버전으로 되돌리기</a>
                                     {% else %}
                                         <a href="/raw/{{ document|encode_doc }}" class="dropdown-item">RAW</a>
-                                        <!-- <a href="//{{ document|encode_doc }}" class="dropdown-item">Blame</a> -->
+                                        <a href="//{{ document|encode_doc }}" class="dropdown-item">Blame</a>
                                         <a href="/diff/{{ document|encode_doc }}" class="dropdown-item">이전 리비전과 비교</a>
                                     {% endif %}
                                 </div>
